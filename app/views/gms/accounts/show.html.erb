@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Id:</strong>
+  <%= @account.id %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @account.name %>
+</p>
+
+<p>
+  <strong>Domain:</strong>
+  <%= @account.domain %>
+</p>
+
+<p>
+  <strong>Resource:</strong>
+  <%= @account.resource %>
+</p>
+
+<p>
+  <strong>Alias:</strong>
+  <%= @account.alias %>
+</p>
+
+<%= link_to 'Edit', edit_account_path(@account) %> |
+<%= link_to 'Back', accounts_path %>

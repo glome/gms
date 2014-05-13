@@ -1,0 +1,33 @@
+<h1><%= t('helpers.account.list') %></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th><%= t('helpers.label.account.name') %></th>
+      <th><%= t('helpers.label.account.domain') %></th>
+      <th><%= t('helpers.label.account.resource') %></th>
+      <th><%= t('helpers.label.account.alias') %></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @accounts.each do |account| %>
+      <tr>
+        <td><%= account.name %></td>
+        <td><%= account.domain %></td>
+        <td><%= account.resource %></td>
+        <td><%= account.alias %></td>
+        <td><%= link_to t('helpers.label.button.show'), account %></td>
+        <td><%= link_to t('helpers.label.button.edit'), edit_account_path(account) %></td>
+        <td><%= link_to t('helpers.label.button.delete'), account, method: :delete, data: { confirm: t('helpers.label.confirm.delete') } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to t('helpers.account.new'), new_account_path %>

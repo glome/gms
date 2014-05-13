@@ -1,0 +1,13 @@
+one:
+  glomeid: hello1
+  name: one
+  domain: glome.me
+  resource: home
+  alias: one_home
+
+two:
+  glomeid: hello2
+  name: two
+  domain: glome.me
+  resource: work
+  alias: two_work
