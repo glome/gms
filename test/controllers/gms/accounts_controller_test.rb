@@ -2,9 +2,9 @@ require 'test_helper'
 
 module Gms
   class AccountsControllerTest < ActionController::TestCase
-    setup do
-      @account = accounts(:one)
-    end
+#    setup do
+#      @account = accounts(:one)
+#    end
 
     test "should get index" do
       get :index

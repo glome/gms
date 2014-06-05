@@ -57,7 +57,7 @@ module Gms
 
       # Only allow a trusted parameter "white list" through.
       def account_params
-        params.require(:account).permit(:glomeid, :name, :domain, :resource, :alias)
+        params.require(:account).permit(:name, :password, :domain, :resource, :alias)
       end
   end
 end

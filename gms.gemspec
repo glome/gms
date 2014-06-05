@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mysql2"
   s.add_dependency "sidekiq"
   s.add_dependency "xmpp4r"
+  s.add_dependency "protected_attributes"
 
   s.add_development_dependency "sqlite3"
 end
