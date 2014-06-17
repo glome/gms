@@ -55,7 +55,8 @@ module Gms
       fullname = username + '@' + @configuration['server']
       fulljid = Jabber::JID::new(fullname)
 
-      close = false
+      ok = true
+
       client = Jabber::Client::new(fulljid)
 
       begin
@@ -80,22 +81,14 @@ module Gms
         client.register password
         puts 'User registered: ' + fullname + ' / ' + password
       rescue Jabber::ServerError => e
-        begin
-          some = 5
-          msg = 'Trying XMPP auth in ' + some.to_s + ' secs: ' + fullname + ' / ' + password
-          self.logger 'debug', msg
-          puts msg
-          sleep some
-          client.auth password
-        rescue Jabber::ClientAuthenticationFailure => e
-          msg = 'Could not authenticate ' + fullname + ' / ' + password + ', reason: ' + e.inspect
-          self.logger 'error', msg
-          puts msg
-          close = true
-        end
+        msg = 'User: ' + fullname + ' is probably registered already.'
+        self.logger 'info', msg
+        puts msg
       end
 
-      if close
+      ok = self.authenticate client, fullname, password if client.present?
+
+      if not ok
         self.logger 'debug', 'Closing XMPP connection: ' + fullname
         client.close
       else
@@ -119,6 +112,35 @@ module Gms
           self.connect_room false, client, room, password unless room.nil?
         end
       end
+    end
+
+    #
+    # authenticates an existing user
+    #
+    def authenticate client, fullname, password
+      begin
+        ok = true
+        some = 5
+        msg = 'Trying XMPP auth in ' + some.to_s + ' secs: ' + fullname + ' / ' + password
+        self.logger 'debug', msg
+        puts msg
+        sleep some
+        client.auth password
+      rescue Jabber::ClientAuthenticationFailure => e
+        msg = 'Could not authenticate ' + fullname + ' / ' + password + ', reason: ' + e.inspect
+        self.logger 'error', msg
+        puts msg
+        ok = false
+      end
+      ok
+    end
+
+    #
+    # TODO
+    #
+    # This method should be called asynchronously (from a sidekiq worker).
+    #
+    def disconnect username = nil, password = nil, room = nil
     end
 
     #
