@@ -18,5 +18,15 @@ module Gms
       # logger.info(exception) # for logging
       render json: {:error => "500"}, status: 500
     end
+
+    # Use callbacks to share common setup or constraints between actions.
+    def set_account
+      @account = Account.find(params[:id])
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def account_params
+      params.require(:account).permit(:name, :password, :domain, :resource, :alias)
+    end
   end
 end
