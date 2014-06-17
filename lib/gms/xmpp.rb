@@ -9,7 +9,7 @@ require 'xmpp4r/stream'
 
 module Gms
   class Xmpp
-    attr_accessor :configuration, :rooms, :adminclient
+    attr_accessor :server, :configuration, :rooms, :adminclient
 
     #
     #
@@ -33,6 +33,7 @@ module Gms
     def init configfile
       begin
         @configuration = YAML.load_file(configfile)
+        @server = @configuration['server']
         self.logger 'info', 'Parsed configuration: ' + @configuration.inspect
       rescue => e
         self.logger 'error', 'Failed to initialize configuration: ' + e.inspect
@@ -61,22 +62,35 @@ module Gms
         client.connect
       rescue
         # try local
+        msg = 'Failed to connect to server, try localhost'
+        puts msg
         client.connect 'localhost'
       end
 
       self.logger 'info', fullname + ' connected'
+      puts fullname + ' connected'
 
       # just wait a bit
-      sleep 2
+      sleep 1
 
       begin
+        msg = 'Register ' + fullname + ' with password ' + password
+        self.logger 'info', msg
+        puts msg
         client.register password
+        puts 'User registered: ' + fullname + ' / ' + password
       rescue Jabber::ServerError => e
         begin
-          self.logger 'debug', 'Trying XMPP auth: ' + fullname
+          some = 5
+          msg = 'Trying XMPP auth in ' + some.to_s + ' secs: ' + fullname + ' / ' + password
+          self.logger 'debug', msg
+          puts msg
+          sleep some
           client.auth password
         rescue Jabber::ClientAuthenticationFailure => e
-          self.logger 'error', 'Could not authenticate ' + fullname + ': ' + e.inspect
+          msg = 'Could not authenticate ' + fullname + ' / ' + password + ', reason: ' + e.inspect
+          self.logger 'error', msg
+          puts msg
           close = true
         end
       end
@@ -101,6 +115,7 @@ module Gms
           end
         else
           # connect any other user
+          puts 'try connecting to room'
           self.connect_room false, client, room, password unless room.nil?
         end
       end
@@ -113,17 +128,27 @@ module Gms
       muc = Jabber::MUC::MUCClient.new client
 
       begin
+        msg = 'Trying connecting to room: ' + room
         self.logger 'info', 'Trying connecting to room: ' + room
+        puts msg
+
+        self.logger 'info', 'muc: ' + muc.inspect
+
         roomjid = Jabber::JID::new(room + '@' + @configuration['conference_server'] + '/' + client.jid.node)
         muc.join roomjid, password
 
-        self.logger 'debug', 'Joined room: ' + room
+        msg = 'Joined room: ' + room
+        self.logger 'debug', msg
+        puts msg
       rescue Jabber::ServerError => e
-        self.logger 'error', 'Could not join room: ' + roomjid.inspect + ' on ' + @configuration['conference_server'] + ': ' + e.inspect
+        msg = 'Could not join room: ' + roomjid.inspect + ' on ' + @configuration['conference_server'] + ': ' + e.inspect
+        self.logger 'error', msg
+        puts msg
+
         muc = nil
       end
 
-      if default and @rooms[room].nil?
+      if default and muc and @rooms[room].nil?
         config = {
           'allow_query_users' => 0,
           'muc#roomconfig_persistentroom' => 0,
