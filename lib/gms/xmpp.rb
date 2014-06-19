@@ -93,9 +93,9 @@ module Gms
       else
         self.log 'debug', @configuration['credentials']['username'] + ' vs ' + username
 
-        @rooms = {}
-
         if @configuration['credentials']['username'] == username
+          @rooms = {}
+
           # connect the default user to all available rooms
           self.log 'info', 'Connect ' + username + ' to all rooms'
 
@@ -193,15 +193,15 @@ module Gms
       muc = @rooms[type]
       room = @configuration['rooms'][type]['name']
 
-      self.log 'info', 'Trying to send XMPP message: ' + message.inspect + ' to ' + room
-      self.log 'debug', 'MUC: ' + muc.inspect
+      self.log 'info', 'Try sending message: ' + message + ' to ' + room
+      self.log 'debug', 'MUC: ' + muc.to_s
 
       if @configuration['enabled'] and muc.present?
         msg = Jabber::Message::new(room, message)
         muc.send msg
 
         self.log 'info', 'Sent XMPP message: ' + msg.inspect + ' to ' + room
-        muc = msg = nil
+        msg = nil
       end
     end
 
@@ -215,7 +215,7 @@ module Gms
 
       jid = Jabber::JID::new(username + '@' + @configuration['server'])
 
-      if @configuration['enabled'] and @admin_client
+      if @configuration['enabled'] and @admin_client.present?
         msg = Jabber::Message::new(jid, message)
         @admin_client.send msg
 
