@@ -193,7 +193,10 @@ module Gms
       muc = @rooms[type]
       room = @configuration['rooms'][type]['name']
 
-      if @configuration['enabled'] and muc
+      self.log 'info', 'Trying to send XMPP message: ' + message.inspect + ' to ' + room
+      self.log 'debug', 'MUC: ' + muc.inspect
+
+      if @configuration['enabled'] and muc.present?
         msg = Jabber::Message::new(room, message)
         muc.send msg
 
