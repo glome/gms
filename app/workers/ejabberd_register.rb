@@ -6,7 +6,7 @@ module Gms
   class EjabberdRegister
     include Sidekiq::Worker
 
-    sidekiq_options :retry => 2, :backtrace => true
+    sidekiq_options :retry => 0, :backtrace => true
 
     def perform struct
       begin

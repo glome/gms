@@ -177,7 +177,7 @@ module Gms
           self.log 'debug', 'Configured room: ' + room
         rescue Jabber::ServerError => e
           self.log 'error', 'Could not configure room: ' + roomjid.inspect + ' on ' + @configuration['conference_server'] + ': ' + e.inspect
-          muc = nil
+          #muc = nil
         end
       end
 
@@ -193,15 +193,19 @@ module Gms
       muc = @rooms[type]
       room = @configuration['rooms'][type]['name']
 
-      self.log 'info', 'Try sending message: ' + message + ' to ' + room
-      self.log 'debug', 'MUC: ' + muc.to_s
+      if @configuration['enabled']
+        self.log 'info', 'Try sending message: ' + message + ' to ' + room
+        if muc.present?
+          msg = Jabber::Message::new(room, message)
+          muc.send msg
 
-      if @configuration['enabled'] and muc.present?
-        msg = Jabber::Message::new(room, message)
-        muc.send msg
-
-        self.log 'info', 'Sent XMPP message: ' + msg.inspect + ' to ' + room
-        msg = nil
+          self.log 'info', 'Sent XMPP message: ' + msg.inspect + ' to ' + room
+          msg = nil
+        else
+          self.log 'error', 'Failed to send message to MUC: ' + type + '. Room is not available.'
+        end
+      else
+        self.log 'info', 'XMPP is disabled on this Glome server.'
       end
     end
 
