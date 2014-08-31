@@ -111,6 +111,7 @@ module Gms
           self.connect_room false, client, room, password unless room.nil?
         end
       end
+      ok
     end
 
     #
